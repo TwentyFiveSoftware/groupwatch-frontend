@@ -1,0 +1,23 @@
+.main {
+    display: flex;
+    flex-direction: column;
+    row-gap: 4rem;
+}
+
+.video {
+    width: 100%;
+    height: auto;
+    background-color: var(--color-panel);
+    border: 0.1rem solid var(--color-panel-border);
+    aspect-ratio: 16 / 9;
+}
+
+.controls {
+    display: flex;
+    gap: 5rem;
+}
+
+.controlGroup {
+    display: flex;
+    gap: 2rem;
+}

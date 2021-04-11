@@ -1,3 +1,13 @@
 .layout {
     display: grid;
+    width: 100%;
+    max-width: 150rem;
+    grid-template-columns: 1fr 25%;
+    justify-self: center;
+    padding: 10rem 2rem 2rem 2rem;
+}
+
+.wrapper {
+    width: 100%;
+    display: grid;
 }
