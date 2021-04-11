@@ -1,0 +1,55 @@
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    padding-top: 3rem;
+}
+
+.subtitle {
+    font-size: 2rem;
+    color: var(--color-text);
+    font-weight: 600;
+    margin: 4rem 0 2rem 0;
+}
+
+.playlist {
+    list-style: none;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 0 1rem;
+}
+
+.entry {
+    display: grid;
+    align-items: center;
+    column-gap: 3rem;
+    grid-template-columns: max-content 1fr max-content;
+    font-size: 1.8rem;
+    color: var(--color-text-light);
+    cursor: pointer;
+    user-select: none;
+}
+
+.index {
+    font-weight: 600;
+}
+
+.info {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.videoCreator {
+    font-size: 1.3rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.videoTitle {
+    font-size: 1.8rem;
+    color: var(--color-text);
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
