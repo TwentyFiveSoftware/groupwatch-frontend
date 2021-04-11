@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
+import styles from './styles/App.module.scss';
 
-const App = () => {
+const App: FunctionComponent = () => {
     return (
-        <div>
+        <div className={styles.layout}>
             <h1>App</h1>
         </div>
     );

@@ -24,18 +24,18 @@
         "noPropertyAccessFromIndexSignature": true,
         "moduleResolution": "node",
         "baseUrl": "./src",
-        "paths": {
-            "~/*": [
-                "./*"
-            ]
-        },
         "typeRoots": [
             "node_modules/@types"
         ],
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true
+        "forceConsistentCasingInFileNames": true,
+        "plugins": [
+            {
+                "name": "typescript-plugin-css-modules"
+            }
+        ]
     },
     "include": [
         "src/**/*"
