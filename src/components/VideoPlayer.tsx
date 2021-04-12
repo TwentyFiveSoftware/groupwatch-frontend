@@ -46,6 +46,15 @@ const VideoPlayer = () => {
         await screenfull.request(playerNode as Element);
     };
 
+    const onSeekStart = (): void => {
+        setIsPlayerPlaying(false);
+    };
+
+    const onSeekEnd = (seconds: number): void => {
+        player?.seekTo(seconds, 'seconds');
+        setIsPlayerPlaying(true);
+    };
+
     return (
         <main className={styles.main}>
             <div className={styles.video}>
@@ -79,6 +88,8 @@ const VideoPlayer = () => {
                 <ProgressBar
                     secondsPassed={Math.floor(playerCurrentTime)}
                     totalSeconds={Math.floor(player?.getDuration() ?? 1)}
+                    onSeekStart={onSeekStart}
+                    onSeekEnd={onSeekEnd}
                 />
                 {screenfull.isEnabled && <IconButton icon={faExpand} onClick={requestFullscreen} />}
             </section>
