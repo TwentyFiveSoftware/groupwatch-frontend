@@ -1,11 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import styles from '../styles/ProgressBar.module.scss';
-
-const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const sec = seconds % 60;
-    return `${minutes}:${sec < 10 ? '0' : ''}${sec}`;
-};
+import { formatTime } from '../App';
 
 const ProgressBar: FunctionComponent<{
     secondsPassed: number;
