@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { findDOMNode } from 'react-dom';
 import ReactPlayer from 'react-player/youtube';
+import screenfull from 'screenfull';
 import { faExpand, faPause, faPlay, faStepBackward, faStepForward } from '@fortawesome/free-solid-svg-icons';
 import styles from '../styles/VideoPlayer.module.scss';
 import IconButton from './IconButton';
@@ -38,6 +40,12 @@ const VideoPlayer = () => {
     const stepForward = (): void => {};
     const stepBackward = (): void => {};
 
+    const requestFullscreen = async () => {
+        const playerNode = findDOMNode(player);
+        if (!playerNode || !screenfull.isEnabled) return;
+        await screenfull.request(playerNode as Element);
+    };
+
     return (
         <main className={styles.main}>
             <div className={styles.video}>
@@ -72,7 +80,7 @@ const VideoPlayer = () => {
                     secondsPassed={Math.floor(playerCurrentTime)}
                     totalSeconds={Math.floor(player?.getDuration() ?? 1)}
                 />
-                <IconButton icon={faExpand} onClick={() => {}} />
+                {screenfull.isEnabled && <IconButton icon={faExpand} onClick={requestFullscreen} />}
             </section>
         </main>
     );
