@@ -15,6 +15,7 @@
 .controls {
     display: flex;
     gap: 5rem;
+    user-select: none;
 }
 
 .controlGroup {
