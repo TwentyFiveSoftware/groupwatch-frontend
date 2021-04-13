@@ -1,5 +1,6 @@
 export interface IPlaylist {
     videos: IVideo[];
+    currentVideoIndex: number;
 }
 
 export interface IVideo {

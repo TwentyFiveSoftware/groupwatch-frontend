@@ -1,7 +1,9 @@
 import React, { FunctionComponent } from 'react';
-import styles from './styles/App.module.scss';
-import VideoPlayer from './components/VideoPlayer';
-import Playlist from './components/Playlist';
+import { io } from 'socket.io-client';
+import { BrowserRouter as Router } from 'react-router-dom';
+import WatchPage from './components/WatchPage';
+
+export const socket = io(process.env['SOCKET_ENDPOINT'] ?? '');
 
 export const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -11,12 +13,9 @@ export const formatTime = (seconds: number) => {
 
 const App: FunctionComponent = () => {
     return (
-        <div className={styles.wrapper}>
-            <div className={styles.layout}>
-                <VideoPlayer />
-                <Playlist />
-            </div>
-        </div>
+        <Router>
+            <WatchPage />
+        </Router>
     );
 };
 
