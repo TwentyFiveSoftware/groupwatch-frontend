@@ -8,6 +8,7 @@ import IconButton from './IconButton';
 import ProgressBar from './ProgressBar';
 import { RoomContext } from './WatchPage';
 import { socket } from '../App';
+import VolumeSlider from './VolumeSlider';
 
 const VideoPlayer = () => {
     const room = useContext(RoomContext);
@@ -16,6 +17,7 @@ const VideoPlayer = () => {
     const [player, setPlayer] = useState<ReactPlayer>();
     const [playerCurrentTime, setPlayerCurrentTime] = useState<number>(0);
     const [isPlayerPlaying, setIsPlayerPlaying] = useState<boolean>(false);
+    const [volume, setVolume] = useState<number>(70);
 
     useEffect(() => {
         if (!isPlayerPlaying === room.playlist.isVideoPlaying) {
@@ -94,6 +96,7 @@ const VideoPlayer = () => {
                     controls={false}
                     progressInterval={500}
                     playing={isPlayerPlaying}
+                    volume={volume / 100}
                     // @ts-ignore
                     onReady={onReady}
                     onProgress={onProgress}
@@ -123,11 +126,12 @@ const VideoPlayer = () => {
                 </div>
                 <ProgressBar
                     secondsPassed={Math.floor(playerCurrentTime)}
-                    totalSeconds={Math.floor(player?.getDuration() ?? 1)}
+                    totalSeconds={Math.floor(player?.getDuration() ?? 0.1)}
                     onSeekStart={onSeekStart}
                     onSeekEnd={onSeekEnd}
                 />
                 {screenfull.isEnabled && <IconButton icon={faExpand} onClick={requestFullscreen} />}
+                <VolumeSlider volume={volume} setVolume={setVolume} />
             </section>
         </main>
     );
