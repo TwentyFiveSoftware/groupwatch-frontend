@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { findDOMNode } from 'react-dom';
 import ReactPlayer from 'react-player/youtube';
 import screenfull from 'screenfull';
@@ -10,15 +10,26 @@ import { RoomContext } from './WatchPage';
 import { socket } from '../App';
 
 const VideoPlayer = () => {
+    const room = useContext(RoomContext);
+    if (room === null) return null;
+
     const [player, setPlayer] = useState<ReactPlayer>();
     const [playerCurrentTime, setPlayerCurrentTime] = useState<number>(0);
     const [isPlayerPlaying, setIsPlayerPlaying] = useState<boolean>(false);
 
-    const room = useContext(RoomContext);
+    useEffect(() => {
+        if (!isPlayerPlaying === room.playlist.isVideoPlaying) {
+            setIsPlayerPlaying(room.playlist.isVideoPlaying);
+        }
+    }, [room.playlist.isVideoPlaying]);
+
+    useEffect(() => {
+        player?.seekTo(room.playlist.currentVideoTime ?? 0, 'seconds');
+    }, [room.playlist.currentVideoTime]);
 
     const onReady = (player: ReactPlayer) => {
         setPlayer(player);
-        // setIsPlayerPlaying(true);
+        setIsPlayerPlaying(true);
     };
 
     const onProgress = ({ playedSeconds }: { playedSeconds: number }) => {
@@ -26,24 +37,32 @@ const VideoPlayer = () => {
     };
 
     const onPause = () => {
-        if (isPlayerPlaying) setIsPlayerPlaying(false);
+        if (isPlayerPlaying) {
+            setIsPlayerPlaying(false);
+            socket.emit('setVideoPlaying', false, player?.getCurrentTime());
+        }
     };
 
     const onPlay = () => {
-        if (!isPlayerPlaying) setIsPlayerPlaying(true);
+        if (!isPlayerPlaying) {
+            setIsPlayerPlaying(true);
+            socket.emit('setVideoPlaying', true);
+        }
     };
 
     const pauseVideo = (): void => {
+        socket.emit('setVideoPlaying', false);
         setIsPlayerPlaying(false);
     };
 
     const playVideo = (): void => {
+        socket.emit('setVideoPlaying', true);
         setIsPlayerPlaying(true);
     };
 
     const changeVideoIndex = (delta: 1 | -1): void => {
         if (room === null) return;
-        socket.emit('selectVideoIndex', room?.playlist.currentVideoIndex + delta);
+        socket.emit('selectVideoIndex', room.playlist.currentVideoIndex + delta);
     };
 
     const requestFullscreen = async () => {
@@ -54,18 +73,21 @@ const VideoPlayer = () => {
 
     const onSeekStart = (): void => {
         setIsPlayerPlaying(false);
+        socket.emit('setVideoPlaying', false);
     };
 
     const onSeekEnd = (seconds: number): void => {
         player?.seekTo(seconds, 'seconds');
         setIsPlayerPlaying(true);
+
+        socket.emit('setVideoPlaying', true, seconds);
     };
 
     return (
         <main className={styles.main}>
             <div className={styles.video}>
                 <ReactPlayer
-                    url={room?.playlist.videos[room?.playlist.currentVideoIndex]?.url}
+                    url={room.playlist.videos[room.playlist.currentVideoIndex]?.url}
                     width={'100%'}
                     height={'100%'}
                     config={{ playerVars: {} }}
@@ -84,7 +106,7 @@ const VideoPlayer = () => {
                     <IconButton
                         icon={faStepBackward}
                         onClick={() => changeVideoIndex(-1)}
-                        disabled={(room?.playlist.currentVideoIndex ?? 0) <= 0}
+                        disabled={(room.playlist.currentVideoIndex ?? 0) <= 0}
                     />
 
                     {isPlayerPlaying ? (
@@ -96,7 +118,7 @@ const VideoPlayer = () => {
                     <IconButton
                         icon={faStepForward}
                         onClick={() => changeVideoIndex(1)}
-                        disabled={(room?.playlist.currentVideoIndex ?? 0) >= (room?.playlist.videos.length ?? 0) - 1}
+                        disabled={(room.playlist.currentVideoIndex ?? 0) >= (room.playlist.videos.length ?? 0) - 1}
                     />
                 </div>
                 <ProgressBar
