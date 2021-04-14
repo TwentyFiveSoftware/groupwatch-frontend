@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import styles from '../styles/WatchPage.module.scss';
 import VideoPlayer from './VideoPlayer';
 import Playlist from './Playlist';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import type { IRoom } from '../types/Room';
 import { socket } from '../App';
+
+export const RoomContext = createContext<IRoom | null>(null);
 
 const WatchPage = () => {
     const history = useHistory();
@@ -31,15 +33,21 @@ const WatchPage = () => {
         });
     }, [match]);
 
+    useEffect(() => {
+        socket.on('roomUpdate', (room: IRoom) => setRoom(room));
+    }, []);
+
     if (room === null) return null;
 
     return (
-        <div className={styles.wrapper}>
-            <div className={styles.layout}>
-                <VideoPlayer />
-                <Playlist />
+        <RoomContext.Provider value={room}>
+            <div className={styles.wrapper}>
+                <div className={styles.layout}>
+                    <VideoPlayer />
+                    <Playlist />
+                </div>
             </div>
-        </div>
+        </RoomContext.Provider>
     );
 };
 
