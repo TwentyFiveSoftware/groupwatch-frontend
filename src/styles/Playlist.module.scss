@@ -17,22 +17,32 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    padding: 0 1rem;
+    padding: 0 0.5rem;
 }
 
 .entry {
     display: grid;
     align-items: center;
     column-gap: 3rem;
-    grid-template-columns: max-content 1fr max-content;
+    grid-template-columns: 2rem 1fr max-content;
     font-size: 1.8rem;
     color: var(--color-text-light);
     cursor: pointer;
     user-select: none;
 }
 
+.entry__current {
+    @extend .entry;
+
+    .index,
+    .videoTitle {
+        color: var(--color-accent);
+    }
+}
+
 .index {
     font-weight: 600;
+    text-align: right;
 }
 
 .info {

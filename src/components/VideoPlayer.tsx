@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { findDOMNode } from 'react-dom';
 import ReactPlayer from 'react-player/youtube';
 import screenfull from 'screenfull';
@@ -6,11 +6,15 @@ import { faExpand, faPause, faPlay, faStepBackward, faStepForward } from '@forta
 import styles from '../styles/VideoPlayer.module.scss';
 import IconButton from './IconButton';
 import ProgressBar from './ProgressBar';
+import { RoomContext } from './WatchPage';
+import { socket } from '../App';
 
 const VideoPlayer = () => {
     const [player, setPlayer] = useState<ReactPlayer>();
     const [playerCurrentTime, setPlayerCurrentTime] = useState<number>(0);
     const [isPlayerPlaying, setIsPlayerPlaying] = useState<boolean>(false);
+
+    const room = useContext(RoomContext);
 
     const onReady = (player: ReactPlayer) => {
         setPlayer(player);
@@ -37,8 +41,10 @@ const VideoPlayer = () => {
         setIsPlayerPlaying(true);
     };
 
-    const stepForward = (): void => {};
-    const stepBackward = (): void => {};
+    const changeVideoIndex = (delta: 1 | -1): void => {
+        if (room === null) return;
+        socket.emit('selectVideoIndex', room?.playlist.currentVideoIndex + delta);
+    };
 
     const requestFullscreen = async () => {
         const playerNode = findDOMNode(player);
@@ -59,7 +65,7 @@ const VideoPlayer = () => {
         <main className={styles.main}>
             <div className={styles.video}>
                 <ReactPlayer
-                    url={'https://www.youtube.com/watch?v=gA6ppby3JC8'}
+                    url={room?.playlist.videos[room?.playlist.currentVideoIndex]?.url}
                     width={'100%'}
                     height={'100%'}
                     config={{ playerVars: {} }}
@@ -75,7 +81,11 @@ const VideoPlayer = () => {
             </div>
             <section className={styles.controls}>
                 <div className={styles.controlGroup}>
-                    <IconButton icon={faStepBackward} onClick={stepForward} />
+                    <IconButton
+                        icon={faStepBackward}
+                        onClick={() => changeVideoIndex(-1)}
+                        disabled={(room?.playlist.currentVideoIndex ?? 0) <= 0}
+                    />
 
                     {isPlayerPlaying ? (
                         <IconButton icon={faPause} onClick={pauseVideo} />
@@ -83,7 +93,11 @@ const VideoPlayer = () => {
                         <IconButton icon={faPlay} onClick={playVideo} />
                     )}
 
-                    <IconButton icon={faStepForward} onClick={stepBackward} />
+                    <IconButton
+                        icon={faStepForward}
+                        onClick={() => changeVideoIndex(1)}
+                        disabled={(room?.playlist.currentVideoIndex ?? 0) >= (room?.playlist.videos.length ?? 0) - 1}
+                    />
                 </div>
                 <ProgressBar
                     secondsPassed={Math.floor(playerCurrentTime)}

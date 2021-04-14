@@ -3,3 +3,8 @@
     color: var(--color-text-light);
     cursor: pointer;
 }
+
+.button__disabled {
+    @extend .button;
+    opacity: 0.5;
+}
