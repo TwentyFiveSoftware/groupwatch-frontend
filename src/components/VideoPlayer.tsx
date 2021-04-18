@@ -16,7 +16,7 @@ const VideoPlayer = () => {
 
     const [player, setPlayer] = useState<ReactPlayer>();
     const [playerCurrentTime, setPlayerCurrentTime] = useState<number>(0);
-    const [isPlayerPlaying, setIsPlayerPlaying] = useState<boolean>(false);
+    const [isPlayerPlaying, setIsPlayerPlaying] = useState<boolean>(true);
     const [volume, setVolume] = useState<number>(70);
 
     useEffect(() => {
@@ -60,6 +60,10 @@ const VideoPlayer = () => {
             setIsPlayerPlaying(true);
             socket.emit('setVideoPlaying', true);
         }
+    };
+
+    const onEnded = () => {
+        changeVideoIndex(1);
     };
 
     const pauseVideo = (): void => {
@@ -112,6 +116,7 @@ const VideoPlayer = () => {
                     onProgress={onProgress}
                     onPlay={onPlay}
                     onPause={onPause}
+                    onEnded={onEnded}
                 />
             </div>
             <section className={styles.controls}>
