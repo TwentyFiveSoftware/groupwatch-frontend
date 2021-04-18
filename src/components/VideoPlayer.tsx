@@ -26,12 +26,22 @@ const VideoPlayer = () => {
     }, [room.playlist.isVideoPlaying]);
 
     useEffect(() => {
-        player?.seekTo(room.playlist.currentVideoTime ?? 0, 'seconds');
+        player?.seekTo(room.playlist.currentVideoTime, 'seconds');
     }, [room.playlist.currentVideoTime]);
+
+    useEffect(() => {
+        socket.on('videoTimeSync', () => {
+            if (!player) return;
+            socket.emit('videoTimeSyncResponse', player.getCurrentTime());
+        });
+    }, [player]);
 
     const onReady = (player: ReactPlayer) => {
         setPlayer(player);
-        setIsPlayerPlaying(true);
+        setIsPlayerPlaying(room.playlist.isVideoPlaying);
+        player.seekTo(room.playlist.currentVideoTime, 'seconds');
+
+        socket.emit('requestVideoTimeSync');
     };
 
     const onProgress = ({ playedSeconds }: { playedSeconds: number }) => {
