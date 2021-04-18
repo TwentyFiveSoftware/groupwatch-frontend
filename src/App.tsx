@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { io } from 'socket.io-client';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import WatchPage from './components/WatchPage';
 
 export const socket = io(process.env['SOCKET_ENDPOINT'] ?? '');
@@ -18,9 +18,9 @@ export const formatTime = (seconds: number) => {
 
 const App: FunctionComponent = () => {
     return (
-        <Router>
+        <HashRouter basename={'/'}>
             <WatchPage />
-        </Router>
+        </HashRouter>
     );
 };
 
