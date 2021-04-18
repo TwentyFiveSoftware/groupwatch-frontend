@@ -45,7 +45,9 @@ const Playlist = () => {
                         <span className={styles.index}>{index + 1}</span>
                         <div className={styles.info}>
                             <p className={styles.videoCreator}>{video.channel}</p>
-                            <p className={styles.videoTitle}>{video.title}</p>
+                            <p className={styles.videoTitle}>
+                                <abbr title={video.title}>{video.title}</abbr>
+                            </p>
                         </div>
                         <span>{formatTime(video.duration)}</span>
                     </li>
