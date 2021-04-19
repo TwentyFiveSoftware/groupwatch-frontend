@@ -2,12 +2,19 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import styles from '../styles/ProgressBar.module.scss';
 import { formatTime } from '../App';
 
-const ProgressBar: FunctionComponent<{
+interface Props {
     secondsPassed: number;
     totalSeconds: number;
-    onSeekStart: Function;
-    onSeekEnd: Function;
-}> = ({ secondsPassed, totalSeconds, onSeekStart, onSeekEnd }) => {
+    onSeekStart: () => void;
+    onSeekEnd: (seconds: number) => void;
+}
+
+const ProgressBar: FunctionComponent<Props> = ({
+    secondsPassed,
+    totalSeconds,
+    onSeekStart,
+    onSeekEnd,
+}: Props): JSX.Element => {
     const [currentTime, setCurrentTime] = useState<number>(secondsPassed);
 
     useEffect(() => setCurrentTime(secondsPassed), [secondsPassed]);
@@ -23,8 +30,7 @@ const ProgressBar: FunctionComponent<{
                     max={totalSeconds}
                     value={currentTime}
                     className={styles.bar}
-                    // @ts-ignore
-                    onChange={(e) => setCurrentTime(e.target.value)}
+                    onChange={(e) => setCurrentTime(Number(e.target.value))}
                     onMouseDown={() => onSeekStart()}
                     onMouseUp={() => onSeekEnd(currentTime)}
                 />

@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { findDOMNode } from 'react-dom';
-import ReactPlayer from 'react-player/youtube';
+import React, { createRef, FunctionComponent, useContext, useEffect, useState } from 'react';
+import ReactPlayer from 'react-player';
 import screenfull from 'screenfull';
 import { faExpand, faPause, faPlay, faStepBackward, faStepForward } from '@fortawesome/free-solid-svg-icons';
 import styles from '../styles/VideoPlayer.module.scss';
@@ -10,24 +9,25 @@ import { RoomContext } from './WatchPage';
 import { socket } from '../App';
 import VolumeSlider from './VolumeSlider';
 
-const VideoPlayer = () => {
-    const room = useContext(RoomContext);
-    if (room === null) return null;
-
+const VideoPlayer: FunctionComponent = (): JSX.Element => {
     const [player, setPlayer] = useState<ReactPlayer>();
     const [playerCurrentTime, setPlayerCurrentTime] = useState<number>(0);
     const [isPlayerPlaying, setIsPlayerPlaying] = useState<boolean>(true);
     const [volume, setVolume] = useState<number>(70);
 
-    useEffect(() => {
-        if (!isPlayerPlaying === room.playlist.isVideoPlaying) {
-            setIsPlayerPlaying(room.playlist.isVideoPlaying);
-        }
-    }, [room.playlist.isVideoPlaying]);
+    const room = useContext(RoomContext);
+    const playerRef = createRef<HTMLDivElement>();
 
     useEffect(() => {
-        player?.seekTo(room.playlist.currentVideoTime, 'seconds');
-    }, [room.playlist.currentVideoTime]);
+        if (!isPlayerPlaying === room?.playlist.isVideoPlaying) {
+            setIsPlayerPlaying(room?.playlist.isVideoPlaying);
+        }
+    }, [isPlayerPlaying, room?.playlist.isVideoPlaying]);
+
+    useEffect(() => {
+        if (!player || !room?.playlist.currentVideoTime) return;
+        player.seekTo(room.playlist.currentVideoTime, 'seconds');
+    }, [player, room?.playlist.currentVideoTime]);
 
     useEffect(() => {
         socket.on('videoTimeSync', () => {
@@ -36,35 +36,33 @@ const VideoPlayer = () => {
         });
     }, [player]);
 
-    const onReady = (player: ReactPlayer) => {
+    const onReady = (player: ReactPlayer): void => {
         setPlayer(player);
-        setIsPlayerPlaying(room.playlist.isVideoPlaying);
-        player.seekTo(room.playlist.currentVideoTime, 'seconds');
+        setIsPlayerPlaying(room?.playlist.isVideoPlaying ?? true);
+        player.seekTo(room?.playlist.currentVideoTime ?? 0, 'seconds');
 
         socket.emit('requestVideoTimeSync');
     };
 
-    const onProgress = ({ playedSeconds }: { playedSeconds: number }) => {
+    const onProgress = ({ playedSeconds }: { playedSeconds: number }): void => {
         setPlayerCurrentTime(playedSeconds);
     };
 
-    const onPause = () => {
-        if (isPlayerPlaying) {
-            setIsPlayerPlaying(false);
-            socket.emit('setVideoPlaying', false, player?.getCurrentTime());
-        }
+    const onPause = (): void => {
+        if (!isPlayerPlaying || !player) return;
+
+        setIsPlayerPlaying(false);
+        socket.emit('setVideoPlaying', false, player.getCurrentTime());
     };
 
-    const onPlay = () => {
-        if (!isPlayerPlaying) {
-            setIsPlayerPlaying(true);
-            socket.emit('setVideoPlaying', true);
-        }
+    const onPlay = (): void => {
+        if (isPlayerPlaying) return;
+
+        setIsPlayerPlaying(true);
+        socket.emit('setVideoPlaying', true);
     };
 
-    const onEnded = () => {
-        changeVideoIndex(1);
-    };
+    const onEnded = (): void => changeVideoIndex(1);
 
     const pauseVideo = (): void => {
         socket.emit('setVideoPlaying', false);
@@ -82,9 +80,8 @@ const VideoPlayer = () => {
     };
 
     const requestFullscreen = async () => {
-        const playerNode = findDOMNode(player);
-        if (!playerNode || !screenfull.isEnabled) return;
-        await screenfull.request(playerNode as Element);
+        if (!playerRef.current || !screenfull.isEnabled) return;
+        await screenfull.request(playerRef.current);
     };
 
     const onSeekStart = (): void => {
@@ -102,17 +99,15 @@ const VideoPlayer = () => {
     return (
         <main className={styles.main}>
             <div className={styles.videoWrapper}>
-                <div className={styles.video}>
+                <div className={styles.video} ref={playerRef}>
                     <ReactPlayer
-                        url={room.playlist.videos[room.playlist.currentVideoIndex]?.url}
+                        url={room?.playlist.videos[room?.playlist.currentVideoIndex]?.url}
                         width={'100%'}
                         height={'100%'}
-                        config={{ playerVars: {} }}
                         controls={false}
                         progressInterval={500}
                         playing={isPlayerPlaying}
                         volume={volume / 100}
-                        // @ts-ignore
                         onReady={onReady}
                         onProgress={onProgress}
                         onPlay={onPlay}
@@ -126,7 +121,7 @@ const VideoPlayer = () => {
                     <IconButton
                         icon={faStepBackward}
                         onClick={() => changeVideoIndex(-1)}
-                        disabled={(room.playlist.currentVideoIndex ?? 0) <= 0}
+                        disabled={(room?.playlist.currentVideoIndex ?? 0) <= 0}
                     />
 
                     {isPlayerPlaying ? (
@@ -138,7 +133,7 @@ const VideoPlayer = () => {
                     <IconButton
                         icon={faStepForward}
                         onClick={() => changeVideoIndex(1)}
-                        disabled={(room.playlist.currentVideoIndex ?? 0) >= (room.playlist.videos.length ?? 0) - 1}
+                        disabled={(room?.playlist.currentVideoIndex ?? 0) >= (room?.playlist.videos.length ?? 0) - 1}
                     />
                 </div>
                 <ProgressBar

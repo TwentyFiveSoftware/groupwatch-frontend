@@ -1,14 +1,14 @@
-import React, { createContext, useEffect, useState } from 'react';
-import styles from '../styles/WatchPage.module.scss';
-import VideoPlayer from './VideoPlayer';
-import Playlist from './Playlist';
+import React, { createContext, FunctionComponent, useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import styles from '../styles/WatchPage.module.scss';
 import type { IRoom } from '../types/Room';
 import { socket } from '../App';
+import VideoPlayer from './VideoPlayer';
+import Playlist from './Playlist';
 
 export const RoomContext = createContext<IRoom | null>(null);
 
-const WatchPage = () => {
+const WatchPage: FunctionComponent = (): JSX.Element | null => {
     const history = useHistory();
     const match = useRouteMatch('/:id');
 
@@ -31,7 +31,7 @@ const WatchPage = () => {
 
             setRoom(joinedRoom);
         });
-    }, [match]);
+    }, [history, match, room]);
 
     useEffect(() => {
         socket.on('roomUpdate', (room: IRoom) => setRoom(room));

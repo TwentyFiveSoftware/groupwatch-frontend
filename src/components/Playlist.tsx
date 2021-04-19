@@ -1,15 +1,15 @@
-import React, { useContext, useState } from 'react';
+import React, { FunctionComponent, useContext, useState } from 'react';
 import ReactPlayer from 'react-player';
 import styles from '../styles/Playlist.module.scss';
 import InputBox from './InputBox';
 import { formatTime, socket } from '../App';
 import { RoomContext } from './WatchPage';
 
-const Playlist = () => {
+const Playlist: FunctionComponent = (): JSX.Element => {
     const [videoUrlInput, setVideoUrlInput] = useState<string>('');
     const room = useContext(RoomContext);
 
-    const addVideoToPlaylist = (url: string) => {
+    const addVideoToPlaylist = (url: string): void => {
         if (url.length === 0) return;
 
         if (ReactPlayer.canPlay(url)) {

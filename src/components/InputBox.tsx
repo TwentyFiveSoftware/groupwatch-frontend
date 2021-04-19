@@ -1,12 +1,14 @@
 import React, { FunctionComponent } from 'react';
 import styles from '../styles/InputBox.module.scss';
 
-const InputBox: FunctionComponent<{ placeholder: string; value: string; onInput: Function; onSubmit: Function }> = ({
-    placeholder,
-    value,
-    onInput,
-    onSubmit,
-}) => {
+interface Props {
+    placeholder: string;
+    value: string;
+    onInput: (value: string) => void;
+    onSubmit: (value: string) => void;
+}
+
+const InputBox: FunctionComponent<Props> = ({ placeholder, value, onInput, onSubmit }: Props): JSX.Element => {
     return (
         <input
             type={'text'}

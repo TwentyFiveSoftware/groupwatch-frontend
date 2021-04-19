@@ -3,11 +3,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import styles from '../styles/IconButton.module.scss';
 
-const IconButton: FunctionComponent<{ icon: IconProp; onClick: Function; disabled?: boolean }> = ({
-    icon,
-    onClick,
-    disabled = false,
-}) => {
+interface Props {
+    icon: IconProp;
+    onClick: () => void;
+    disabled?: boolean;
+}
+
+const IconButton: FunctionComponent<Props> = ({ icon, onClick, disabled = false }: Props): JSX.Element => {
     return disabled ? (
         <FontAwesomeIcon className={styles.button__disabled} icon={icon} />
     ) : (
