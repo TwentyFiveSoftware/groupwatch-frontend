@@ -22,7 +22,7 @@ const VideoPlayer: FunctionComponent = (): JSX.Element => {
         if (!isPlayerPlaying === room?.playlist.isVideoPlaying) {
             setIsPlayerPlaying(room?.playlist.isVideoPlaying);
         }
-    }, [isPlayerPlaying, room?.playlist.isVideoPlaying]);
+    }, [room?.playlist.isVideoPlaying]);
 
     useEffect(() => {
         if (!player || !room?.playlist.currentVideoTime) return;
