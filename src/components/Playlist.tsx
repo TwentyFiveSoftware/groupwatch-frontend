@@ -52,6 +52,8 @@ const Playlist = () => {
                         <span>{formatTime(video.duration)}</span>
                     </li>
                 ))}
+
+                {room?.playlist.videos.length === 0 && <p className={styles.emptyMessage}>NO VIDEOS IN PLAYLIST</p>}
             </ul>
         </aside>
     );

@@ -23,9 +23,21 @@
         border-radius: 50%;
     }
 
+    input::-moz-range-thumb {
+        -moz-appearance: none;
+        border: none;
+        width: 1.4rem;
+        height: 1.4rem;
+        background: none;
+    }
+
     &:hover {
         input::-webkit-slider-thumb {
             display: block;
+        }
+
+        input::-moz-range-thumb {
+            background-color: var(--color-accent);
         }
 
         .barProgress {
@@ -52,6 +64,6 @@
     border-radius: 10rem;
     background-color: var(--color-text-light);
     cursor: pointer;
-    transition: 1s linear;
+    transition: 1s linear width;
     pointer-events: none;
 }

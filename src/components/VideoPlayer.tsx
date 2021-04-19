@@ -101,23 +101,25 @@ const VideoPlayer = () => {
 
     return (
         <main className={styles.main}>
-            <div className={styles.video}>
-                <ReactPlayer
-                    url={room.playlist.videos[room.playlist.currentVideoIndex]?.url}
-                    width={'100%'}
-                    height={'100%'}
-                    config={{ playerVars: {} }}
-                    controls={false}
-                    progressInterval={500}
-                    playing={isPlayerPlaying}
-                    volume={volume / 100}
-                    // @ts-ignore
-                    onReady={onReady}
-                    onProgress={onProgress}
-                    onPlay={onPlay}
-                    onPause={onPause}
-                    onEnded={onEnded}
-                />
+            <div className={styles.videoWrapper}>
+                <div className={styles.video}>
+                    <ReactPlayer
+                        url={room.playlist.videos[room.playlist.currentVideoIndex]?.url}
+                        width={'100%'}
+                        height={'100%'}
+                        config={{ playerVars: {} }}
+                        controls={false}
+                        progressInterval={500}
+                        playing={isPlayerPlaying}
+                        volume={volume / 100}
+                        // @ts-ignore
+                        onReady={onReady}
+                        onProgress={onProgress}
+                        onPlay={onPlay}
+                        onPause={onPause}
+                        onEnded={onEnded}
+                    />
+                </div>
             </div>
             <section className={styles.controls}>
                 <div className={styles.controlGroup}>

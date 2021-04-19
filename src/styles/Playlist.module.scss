@@ -80,3 +80,9 @@
     text-overflow: ellipsis;
     overflow: hidden;
 }
+
+.emptyMessage {
+    font-size: 1.5rem;
+    color: var(--color-text-light);
+    text-align: center;
+}
