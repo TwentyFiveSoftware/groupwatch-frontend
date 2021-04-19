@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useContext, useState } from 'react';
 import ReactPlayer from 'react-player';
 import styles from '../styles/Playlist.module.scss';
+import { SocketEventType } from '../types/SocketEventType';
 import InputBox from './InputBox';
 import { formatTime, socket } from '../App';
 import { RoomContext } from './WatchPage';
@@ -13,7 +14,7 @@ const Playlist: FunctionComponent = (): JSX.Element => {
         if (url.length === 0) return;
 
         if (ReactPlayer.canPlay(url)) {
-            socket.emit('addVideoToPlaylist', url);
+            socket.emit(SocketEventType.PLAYLIST_ADD_VIDEO, url);
             setVideoUrlInput('');
             return;
         }
@@ -22,7 +23,7 @@ const Playlist: FunctionComponent = (): JSX.Element => {
     };
 
     const selectVideoIndex = (index: number): void => {
-        socket.emit('selectVideoIndex', index);
+        socket.emit(SocketEventType.PLAYLIST_SELECT_VIDEO, index);
     };
 
     return (

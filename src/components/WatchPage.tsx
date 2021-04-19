@@ -5,6 +5,7 @@ import type { IRoom } from '../types/Room';
 import { socket } from '../App';
 import VideoPlayer from './VideoPlayer';
 import Playlist from './Playlist';
+import { SocketEventType } from '../types/SocketEventType';
 
 export const RoomContext = createContext<IRoom | null>(null);
 
@@ -19,9 +20,9 @@ const WatchPage: FunctionComponent = (): JSX.Element | null => {
 
         const id: string | null = match?.params ? (match.params as { id: string }).id : null;
 
-        socket.emit('join', id);
+        socket.emit(SocketEventType.ROOM_JOIN, id);
 
-        socket.on('joinResponse', (joinedRoom: IRoom) => {
+        socket.on(SocketEventType.ROOM_JOIN_RESPONSE, (joinedRoom: IRoom) => {
             if (room !== null) return;
 
             if (joinedRoom.id !== id) {
@@ -34,7 +35,7 @@ const WatchPage: FunctionComponent = (): JSX.Element | null => {
     }, [history, match, room]);
 
     useEffect(() => {
-        socket.on('roomUpdate', (room: IRoom) => setRoom(room));
+        socket.on(SocketEventType.PLAYLIST_UPDATE, (room: IRoom) => setRoom(room));
     }, []);
 
     if (room === null) return null;

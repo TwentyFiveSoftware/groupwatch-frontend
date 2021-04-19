@@ -8,6 +8,7 @@ import ProgressBar from './ProgressBar';
 import { RoomContext } from './WatchPage';
 import { socket } from '../App';
 import VolumeSlider from './VolumeSlider';
+import { SocketEventType } from '../types/SocketEventType';
 
 const VideoPlayer: FunctionComponent = (): JSX.Element => {
     const [player, setPlayer] = useState<ReactPlayer>();
@@ -30,9 +31,9 @@ const VideoPlayer: FunctionComponent = (): JSX.Element => {
     }, [player, room?.playlist.currentVideoTime]);
 
     useEffect(() => {
-        socket.on('videoTimeSync', () => {
+        socket.on(SocketEventType.PLAYLIST_VIDEO_TIME_SYNC_REQUEST, () => {
             if (!player) return;
-            socket.emit('videoTimeSyncResponse', player.getCurrentTime());
+            socket.emit(SocketEventType.PLAYLIST_VIDEO_TIME_SYNC_RESPONSE, player.getCurrentTime());
         });
     }, [player]);
 
@@ -41,7 +42,7 @@ const VideoPlayer: FunctionComponent = (): JSX.Element => {
         setIsPlayerPlaying(room?.playlist.isVideoPlaying ?? true);
         player.seekTo(room?.playlist.currentVideoTime ?? 0, 'seconds');
 
-        socket.emit('requestVideoTimeSync');
+        socket.emit(SocketEventType.PLAYLIST_VIDEO_TIME_SYNC_REQUEST);
     };
 
     const onProgress = ({ playedSeconds }: { playedSeconds: number }): void => {
@@ -52,31 +53,31 @@ const VideoPlayer: FunctionComponent = (): JSX.Element => {
         if (!isPlayerPlaying || !player) return;
 
         setIsPlayerPlaying(false);
-        socket.emit('setVideoPlaying', false, player.getCurrentTime());
+        socket.emit(SocketEventType.PLAYLIST_SET_VIDEO_PLAYING, false, player.getCurrentTime());
     };
 
     const onPlay = (): void => {
         if (isPlayerPlaying) return;
 
         setIsPlayerPlaying(true);
-        socket.emit('setVideoPlaying', true);
+        socket.emit(SocketEventType.PLAYLIST_SET_VIDEO_PLAYING, true);
     };
 
     const onEnded = (): void => changeVideoIndex(1);
 
     const pauseVideo = (): void => {
-        socket.emit('setVideoPlaying', false);
+        socket.emit(SocketEventType.PLAYLIST_SET_VIDEO_PLAYING, false);
         setIsPlayerPlaying(false);
     };
 
     const playVideo = (): void => {
-        socket.emit('setVideoPlaying', true);
+        socket.emit(SocketEventType.PLAYLIST_SET_VIDEO_PLAYING, true);
         setIsPlayerPlaying(true);
     };
 
     const changeVideoIndex = (delta: 1 | -1): void => {
         if (room === null) return;
-        socket.emit('selectVideoIndex', room.playlist.currentVideoIndex + delta);
+        socket.emit(SocketEventType.PLAYLIST_SELECT_VIDEO, room.playlist.currentVideoIndex + delta);
     };
 
     const requestFullscreen = async () => {
@@ -86,14 +87,14 @@ const VideoPlayer: FunctionComponent = (): JSX.Element => {
 
     const onSeekStart = (): void => {
         setIsPlayerPlaying(false);
-        socket.emit('setVideoPlaying', false);
+        socket.emit(SocketEventType.PLAYLIST_SET_VIDEO_PLAYING, false);
     };
 
     const onSeekEnd = (seconds: number): void => {
         player?.seekTo(seconds, 'seconds');
         setIsPlayerPlaying(true);
 
-        socket.emit('setVideoPlaying', true, seconds);
+        socket.emit(SocketEventType.PLAYLIST_SET_VIDEO_PLAYING, true, seconds);
     };
 
     return (
